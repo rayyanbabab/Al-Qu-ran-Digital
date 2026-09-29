@@ -23,7 +23,7 @@ export const ScrollProgress = ({ isOverflowScroll }) => {
         });
       }
     }
-  }, []);
+  }, [isOverflowScroll]);
   return (
     <svg
       width="50"

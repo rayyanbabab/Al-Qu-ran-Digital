@@ -4,42 +4,70 @@
 
 @layer base {
   html {
-    height: 100%;
+    scroll-behavior: smooth;
   }
   
   body {
-    font-family: var(--font-inter);
-    height: 100%;
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    @apply bg-base-100 text-base-content antialiased;
+  }
+
+  .font-amiri {
+    font-family: var(--font-amiri), 'Scheherazade New', serif;
+    direction: rtl;
+    line-height: 2.3;
   }
 
   .font-arabic {
-    font-family: var(--font-noto-arabic);
+    font-family: var(--font-noto-arabic), sans-serif;
     direction: rtl;
-    @apply text-2xl sm:text-4xl leading-[3rem] sm:leading-[4rem];
+    line-height: 2.2;
   }
 
   .fontIbm {
-    font-family: var(--font-ibm-arabic);
+    font-family: var(--font-ibm-arabic), sans-serif;
     direction: rtl;
-    @apply text-2xl sm:text-4xl leading-[3rem] sm:leading-[4rem];
+    line-height: 2.2;
   }
 
   .fontKufi {
-    font-family: var(--font-kufi-arabic);
+    font-family: var(--font-kufi-arabic), sans-serif;
     direction: rtl;
-    @apply text-2xl sm:text-4xl leading-[3rem] sm:leading-[4rem];
-  }
-
-  h2 {
-    @apply text-2xl mb-5;
-  }
-
-  a {
-    @apply hover:opacity-70 transition-all;
+    line-height: 2.2;
   }
 }
 
 @layer components {
+  /* Islamic Rub-el-Hizb Badge */
+  .rub-el-hizb {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Custom Clean Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-base-300 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/40;
+  }
+
+  /* Traditional frame / ornamental border */
+  .islamic-cartouche {
+    position: relative;
+    background: radial-gradient(circle at center, var(--fallback-b2,oklch(var(--b2)/0.4)) 0%, transparent 70%);
+  }
+
   .progress-wheel {
     transform: rotate(-90deg);
   }
@@ -51,24 +79,12 @@
   }
   
   .progress-wheel .bg {
-    opacity: 0.2;
+    opacity: 0.15;
     @apply stroke-primary;
   }
   
   .progress-wheel .progress {
     stroke-dasharray: 0, 1;
     @apply stroke-primary;
-  }
-
-  .paragraph {
-    @apply text-justify;
-  }
-
-  .paragraph:last-child > span{
-    @apply hidden;
-  }
-
-  .paragraph:last-child {
-    @apply !mb-0;
   }
 }

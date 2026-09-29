@@ -11,19 +11,20 @@ const themeReducer = (state, action) => {
       return { ...state, theme: action.payload };
     case 'CHANGE_FONT':
       return { ...state, font: action.payload };
+    case 'CHANGE_FONT_SIZE':
+      return { ...state, fontSize: action.payload };
     default:
       return state;
   }
 };
 
 export function ThemeProvider({ children }) {
-  // 1
   const [state, dispatch] = useReducer(themeReducer, {
-    theme: 'lemonade',
-    font: 'font-arabic',
+    theme: 'emerald',
+    font: 'font-amiri',
+    fontSize: 'text-3xl', // text-2xl, text-3xl, text-4xl, text-5xl
   });
 
-  // 2
   const changeTheme = (theme) => {
     dispatch({ type: 'CHANGE_THEME', payload: theme });
   };
@@ -32,8 +33,12 @@ export function ThemeProvider({ children }) {
     dispatch({ type: 'CHANGE_FONT', payload: font });
   };
 
+  const changeFontSize = (fontSize) => {
+    dispatch({ type: 'CHANGE_FONT_SIZE', payload: fontSize });
+  };
+
   return (
-    <ThemeContext.Provider value={{ ...state, changeTheme, changeFont }}>
+    <ThemeContext.Provider value={{ ...state, changeTheme, changeFont, changeFontSize }}>
       {children}
     </ThemeContext.Provider>
   );
