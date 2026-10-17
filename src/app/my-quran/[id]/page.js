@@ -51,12 +51,15 @@ async function getSurah(id) {
   }
 }
 
+import { getSurahNameId } from '@/lib/surahMeta';
+
 export async function generateMetadata({ params }) {
   const surah = await getSurah(params.id);
   if (!surah) return { title: "Surah Tidak Ditemukan" };
+  const displayName = getSurahNameId(surah.number_of_surah) || surah.name;
   return {
-    title: `Surah ${surah.name} (${surah.name_translations?.ar || ''}) - Al-Qur'an Digital`,
-    description: `Baca Surah ${surah.name} (${surah.name_translations?.id || ''}) lengkap ayat Arab, terjemahan Indonesia & tafsir resmi Kemenag RI.`,
+    title: `Surah ${displayName} (${surah.name_translations?.ar || ''}) - Al-Qur'an Digital`,
+    description: `Baca Surah ${displayName} (${surah.name_translations?.id || ''}) lengkap ayat Arab, terjemahan Indonesia & tafsir resmi Kemenag RI.`,
   };
 }
 
@@ -81,6 +84,9 @@ export default async function Page({ params }) {
       : null;
   const tafsirSurah = surah.tafsir?.id?.kemenag;
   const isMakkiyah = surah.type === 'Makkiyah' || surah.place === 'Mecca';
+  const displayName = getSurahNameId(surah.number_of_surah) || surah.name;
+  const prevDisplayName = surahPrev ? (getSurahNameId(surahPrev.number_of_surah) || surahPrev.name) : '';
+  const nextDisplayName = surahNext ? (getSurahNameId(surahNext.number_of_surah) || surahNext.name) : '';
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
@@ -100,10 +106,10 @@ export default async function Page({ params }) {
             <Link
               href={`/my-quran/${surahNumber - 1}`}
               className="inline-flex items-center gap-1 py-1.5 px-3 rounded-lg border border-base-300 hover:border-primary/40 bg-base-100 text-base-content/80 hover:text-primary transition-colors"
-              title={`Ke Surah ${surahPrev.name}`}
+              title={`Ke Surah ${prevDisplayName}`}
             >
               <ChevronLeft className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{surahPrev.name}</span>
+              <span className="hidden sm:inline">{prevDisplayName}</span>
             </Link>
           )}
 
@@ -111,24 +117,23 @@ export default async function Page({ params }) {
             <Link
               href={`/my-quran/${surahNumber + 1}`}
               className="inline-flex items-center gap-1 py-1.5 px-3 rounded-lg border border-base-300 hover:border-primary/40 bg-base-100 text-base-content/80 hover:text-primary transition-colors"
-              title={`Ke Surah ${surahNext.name}`}
+              title={`Ke Surah ${nextDisplayName}`}
             >
-              <span className="hidden sm:inline">{surahNext.name}</span>
+              <span className="hidden sm:inline">{nextDisplayName}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           )}
         </div>
       </div>
 
-      {/* Traditional Surah Header Banner (Islamic Cartouche) */}
-      <header className="relative text-center overflow-hidden rounded-2xl border border-base-300 bg-gradient-to-b from-primary/10 via-base-200/60 to-base-100 p-6 sm:p-10 mb-8">
-        {/* Subtle decorative background elements */}
+      {/* Traditional Surah Header Banner (Clean Islamic Editorial) */}
+      <header className="relative text-center overflow-hidden rounded-2xl border border-base-300 bg-base-100 p-6 sm:p-10 mb-8 shadow-2xs">
         <div className="relative z-10 space-y-3">
           {/* Rub-el-Hizb Badge */}
           <RubElHizb
             className="w-12 h-12 mx-auto"
-            starClassName="text-primary/25"
-            borderClassName="stroke-primary/60"
+            starClassName="text-primary/20"
+            borderClassName="stroke-primary/50"
             textClassName="text-sm font-bold text-primary"
           >
             {surah.number_of_surah}
@@ -144,7 +149,7 @@ export default async function Page({ params }) {
 
           {/* Latin Name & Meaning */}
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-base-content">
-            Surah {surah.name}
+            Surah {displayName}
           </h1>
 
           <p className="text-xs sm:text-sm text-base-content/70 italic font-serif">
@@ -154,7 +159,7 @@ export default async function Page({ params }) {
           {/* Meta Info Badges */}
           <div className="flex items-center justify-center gap-2 pt-2 text-xs">
             <span
-              className={`inline-block px-2.5 py-0.5 rounded-full font-medium ${
+              className={`inline-block px-2 py-0.5 rounded-md font-medium text-[11px] ${
                 isMakkiyah
                   ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
                   : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'

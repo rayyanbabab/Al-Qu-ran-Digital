@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, X, Filter } from 'lucide-react';
+import { Search, X } from 'lucide-react';
+import { isSurahMatch } from '@/lib/surahMeta';
 
 const quickShortcuts = [
   'Al-Fatihah',
@@ -9,13 +10,25 @@ const quickShortcuts = [
   'Al-Kahf',
   'Yasin',
   'Ar-Rahman',
-  'Al-Waqi\'ah',
+  "Al-Waqi'ah",
   'Al-Mulk',
 ];
 
-export const SurahSearch = ({ quranData, setFilteredQuranData }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState('ALL'); // 'ALL' | 'Makkiyah' | 'Madaniyah'
+export const SurahSearch = ({
+  quranData,
+  setFilteredQuranData,
+  searchTerm: controlledSearchTerm,
+  setSearchTerm: controlledSetSearchTerm,
+  selectedType: controlledSelectedType,
+  setSelectedType: controlledSetSelectedType,
+}) => {
+  const [internalSearchTerm, setInternalSearchTerm] = useState('');
+  const [internalSelectedType, setInternalSelectedType] = useState('ALL'); // 'ALL' | 'Makkiyah' | 'Madaniyah'
+
+  const searchTerm = controlledSearchTerm !== undefined ? controlledSearchTerm : internalSearchTerm;
+  const setSearchTerm = controlledSetSearchTerm || setInternalSearchTerm;
+  const selectedType = controlledSelectedType !== undefined ? controlledSelectedType : internalSelectedType;
+  const setSelectedType = controlledSetSelectedType || setInternalSelectedType;
 
   useEffect(() => {
     if (!quranData || !Array.isArray(quranData)) return;
@@ -30,17 +43,8 @@ export const SurahSearch = ({ quranData, setFilteredQuranData }) => {
         if (!isMadaniyah) return false;
       }
 
-      // Filter by search query
-      if (!searchTerm.trim()) return true;
-
-      const searchLower = searchTerm.toLowerCase().trim();
-      const nameMatch = surah.name?.toLowerCase().includes(searchLower);
-      const numberMatch = surah.number_of_surah?.toString() === searchLower || surah.number_of_surah?.toString().includes(searchLower);
-      const translationMatch = Object.values(surah.name_translations || {}).some((t) =>
-        t?.toLowerCase().includes(searchLower)
-      );
-
-      return nameMatch || numberMatch || translationMatch;
+      // Filter by search query using robust transliteration & alias matcher
+      return isSurahMatch(surah, searchTerm);
     });
 
     setFilteredQuranData(filtered);
@@ -68,7 +72,7 @@ export const SurahSearch = ({ quranData, setFilteredQuranData }) => {
         <input
           type="text"
           className="w-full pl-10 pr-10 py-3 rounded-xl border border-base-300 bg-base-100 text-sm placeholder:text-base-content/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
-          placeholder="Cari nama surah (cth. Al-Kahf, Yasin), nomor surah, atau arti..."
+          placeholder="Cari nama surah (cth. Al-Fatihah, Al-Kahf, Yasin), nomor surah, atau arti..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
